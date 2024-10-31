@@ -34,6 +34,8 @@ public class Ficha {
 
     @Transient 
     private Double saldoPendiente;
+
+    public Ficha() {};
     
     public Ficha(Long id, String nombre, String apellido, String telefono, LocalDate fecha,
             Double dioptrias, String cristal, String armazon, Double precioTotal, Double abonado)

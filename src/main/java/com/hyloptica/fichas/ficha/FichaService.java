@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class FichaService {
 
+    HashMap<String, Object> datos;
+
     private final FichaRepository fichaRepository;
 
     
@@ -24,25 +26,48 @@ public class FichaService {
     }
 
     public ResponseEntity<Object> crearFicha(Ficha ficha){
-        Optional<Ficha> res = fichaRepository.findFichaByNombre(ficha.getNombre());
-        Optional<Ficha> res1 = fichaRepository.findFichaByApellido(ficha.getApellido());
-        HashMap<String, Object> datos = new HashMap<>();
-        
-        if (res.isPresent() && res1.isPresent()){
+        Optional<Ficha> res = fichaRepository.findFichaByNombreAndApellido(ficha.getNombre(), ficha.getApellido());
+        datos = new HashMap<>();
+
+        if (res.isPresent() && ficha.getId()==null){
             datos.put("error",true);
             datos.put("message","Ya existe un paciente con ese nombre");
             return new ResponseEntity<>(
                 datos,
                 HttpStatus.CONFLICT 
             );
+        }else{
+                datos.put("message","Se creo la ficha con exito!");
+            if(ficha.getId() != null){
+                datos.put("message","Se actualizo la ficha con exito!");
+            }
+            fichaRepository.save(ficha);
+            datos.put("data", ficha);
+            
+            return new ResponseEntity<>(
+                datos,
+                HttpStatus.OK
+            ); 
         }  
-        fichaRepository.save(ficha);
-        datos.put("data", ficha);
-        datos.put("message","Se creo la ficha con exito!");
-        return new ResponseEntity<>(
-            datos,
-            HttpStatus.CREATED
-        ); 
+        
+    }
+
+    public ResponseEntity<Object> eliminarFicha(Long id){
+        datos = new HashMap<>();
+        boolean existe = this.fichaRepository.existsById(id);
+        if(!existe){
+            datos.put("error",true);
+            datos.put("message","No existe una ficha con ese id");
+            return new ResponseEntity<>(
+                datos,
+                HttpStatus.CONFLICT);
+        } else {
+            fichaRepository.deleteById(id);
+            datos.put("message","Ficha eliminada");
+            return new ResponseEntity<>(
+                datos,
+                HttpStatus.OK);
+        }
     }
 
 } 

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FichaRepository extends JpaRepository<Ficha, Long> {
     
-    Optional<Ficha> findFichaByNombre(String name);
-    Optional<Ficha> findFichaByApellido(String apellido);
+    Optional<Ficha> findFichaByNombreAndApellido(String name, String apellido);
+
 
 }
